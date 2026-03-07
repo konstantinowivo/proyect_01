@@ -1,0 +1,4 @@
+@echo off
+echo Iniciando PostgreSQL...
+"C:\Program Files\PostgreSQL\18\bin\postgres.exe" -D "C:\Program Files\PostgreSQL\18\data"
+pause

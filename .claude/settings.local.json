@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(psql:*)",
+      "Bash(cat:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl:*)",
+      "Read(//c/Program Files/PostgreSQL/18/bin//**)",
+      "Bash(PGPASSWORD=admin123 \"/c/Program Files/PostgreSQL/18/bin/psql\":*)",
+      "Read(//c/Program Files/PostgreSQL//**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
