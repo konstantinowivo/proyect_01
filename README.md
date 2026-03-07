@@ -1,6 +1,34 @@
-# Sistema de Gestión de Edificios
+# 🏢 Sistema de Gestión de Edificios
+
+![Next.js](https://img.shields.io/badge/Next.js-14.2.5-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18.3-blue?logo=postgresql)
+![Prisma](https://img.shields.io/badge/Prisma-5.22.0-2D3748?logo=prisma)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 Sistema integral para administración de edificios e inquilinos, desarrollado con Next.js, TypeScript, PostgreSQL y Prisma.
+
+**🔗 Repositorio**: [https://github.com/konstantinowivo/proyect_01](https://github.com/konstantinowivo/proyect_01)
+
+---
+
+## 📸 Screenshots
+
+### Dashboard Administrativo
+![Dashboard Admin](docs/screenshots/dashboard-admin.png)
+*Panel de control con estadísticas en tiempo real y selector de edificios*
+
+### Gestión de Edificios
+![Buildings Management](docs/screenshots/buildings-crud.png)
+*CRUD completo de edificios con tarjetas visuales*
+
+### Building Tabs
+![Building Tabs](docs/screenshots/building-tabs.png)
+*Sistema de tabs con actualización automática usando React Context*
+
+> **Nota**: Los screenshots serán agregados próximamente
+
+---
 
 ## 🏢 Descripción
 
@@ -45,8 +73,8 @@ Los inquilinos pueden:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <repository-url>
-cd adm_system
+git clone https://github.com/konstantinowivo/proyect_01.git
+cd proyect_01
 ```
 
 ### 2. Instalar dependencias
@@ -202,29 +230,38 @@ npx prisma generate  # Regenerar Prisma Client
 
 ## 🚧 Roadmap
 
-### ✅ Fase 1: Fundamentos (Actual)
-- [x] Modelo de datos
+### ✅ Fase 1: Fundamentos (COMPLETADA)
+- [x] Modelo de datos completo con Prisma
 - [x] Tipos TypeScript
-- [ ] Autenticación
-- [ ] Dashboard básico
+- [x] Autenticación con JWT y roles (ADMIN/TENANT)
+- [x] Dashboard administrativo con estadísticas en tiempo real
+- [x] Gestión completa de edificios (CRUD)
+- [x] Sistema de tabs con BuildingContext para actualización automática
+- [x] Middleware de autenticación y protección de rutas
+- [x] Seed data para testing
 
-### 📋 Fase 2: Funcionalidades Core
-- [ ] Sistema de avisos
-- [ ] Gestión de inquilinos
-- [ ] Gestión de tareas
-- [ ] Sistema de pagos
+### 📋 Fase 2: Funcionalidades Core (EN PROGRESO)
+- [ ] Sistema de avisos y novedades
+- [ ] Gestión completa de inquilinos (CRUD)
+- [ ] Gestión de unidades (CRUD)
+- [ ] Gestión de tareas de mantenimiento
+- [ ] Sistema de pagos y expensas
+- [ ] Upload y gestión de documentos
 
 ### 🎯 Fase 3: Features Avanzadas
-- [ ] Dashboard de inquilino
-- [ ] Reportes y estadísticas
-- [ ] Notificaciones en tiempo real
-- [ ] Upload de archivos
+- [ ] Dashboard completo para inquilinos
+- [ ] Reportes y estadísticas avanzadas
+- [ ] Notificaciones en tiempo real (WebSockets)
+- [ ] Sistema de búsqueda y filtros
+- [ ] Exportación de datos (PDF, Excel)
 
 ### 🌟 Futuro
-- [ ] Amenidades y reservas
-- [ ] Contratos de mantenimiento
-- [ ] Actas de reuniones
-- [ ] App móvil
+- [ ] Amenidades y sistema de reservas
+- [ ] Contratos de mantenimiento con proveedores
+- [ ] Actas digitales de reuniones
+- [ ] App móvil (React Native)
+- [ ] Modo offline
+- [ ] Integración con servicios de pago
 
 ---
 
