@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { createBuildingSchema } from '@/lib/validators';
+import { getBuildingTenantFilter } from '@/lib/tenant-context';
 import prisma from '@/lib/prisma';
 
 // GET /api/buildings - Get all buildings for the authenticated admin
@@ -8,8 +9,11 @@ export async function GET() {
   try {
     const session = requireAdmin();
 
+    // Get tenant filter using centralized helper (MULTI-TENANT SECURITY)
+    const whereClause = getBuildingTenantFilter(session);
+
     const buildings = await prisma.building.findMany({
-      where: { adminId: session.userId },
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
       include: {
         _count: {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getTenantRecordFilter } from '@/lib/tenant-context';
 import { z } from 'zod';
 
 const updateTenantSchema = z.object({
@@ -21,15 +22,11 @@ export async function GET(
     const session = requireAuth();
     const { id } = params;
 
-    const whereClause: any = { id };
-
-    if (session.role === 'ADMIN') {
-      whereClause.building = {
-        adminId: session.userId,
-      };
-    } else if (session.role === 'TENANT') {
-      whereClause.userId = session.userId;
-    }
+    // Get tenant filter using centralized helper (MULTI-TENANT SECURITY)
+    const whereClause: any = {
+      id,
+      ...getTenantRecordFilter(session)
+    };
 
     const tenant = await prisma.tenant.findFirst({
       where: whereClause,

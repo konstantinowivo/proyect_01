@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getUnitTenantFilter, verifyUnitOwnership } from '@/lib/tenant-context';
 import { z } from 'zod';
 
 const updateUnitSchema = z.object({
@@ -22,20 +23,11 @@ export async function GET(
     const session = requireAuth();
     const { id } = params;
 
-    const whereClause: any = { id };
-
-    if (session.role === 'ADMIN') {
-      whereClause.building = {
-        adminId: session.userId,
-      };
-    } else if (session.role === 'TENANT') {
-      whereClause.tenants = {
-        some: {
-          userId: session.userId,
-          isActive: true,
-        },
-      };
-    }
+    // Get tenant filter using centralized helper (MULTI-TENANT SECURITY)
+    const whereClause: any = {
+      id,
+      ...getUnitTenantFilter(session)
+    };
 
     const unit = await prisma.unit.findFirst({
       where: whereClause,
@@ -148,31 +140,15 @@ export async function PUT(
     const body = await request.json();
     const validatedData = updateUnitSchema.parse(body);
 
-    // Verify the unit belongs to the admin's building
-    const existingUnit = await prisma.unit.findFirst({
-      where: {
-        id,
-        building: {
-          adminId: session.userId,
-        },
-      },
+    // Verify the unit belongs to the admin's building (MULTI-TENANT SECURITY)
+    await verifyUnitOwnership(prisma, id, session.userId);
+
+    const existingUnit = await prisma.unit.findUnique({
+      where: { id },
       include: {
         building: true,
       },
     });
-
-    if (!existingUnit) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            message: 'Unidad no encontrada',
-            code: 'NOT_FOUND',
-          },
-        },
-        { status: 404 }
-      );
-    }
 
     // If changing the unit number, check for duplicates
     if (validatedData.number && validatedData.number !== existingUnit.number) {

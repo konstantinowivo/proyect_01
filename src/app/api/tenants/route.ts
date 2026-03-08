@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { getTenantRecordFilter, verifyBuildingOwnership, verifyUnitOwnership } from '@/lib/tenant-context';
 import { z } from 'zod';
 
 // Validation schema
@@ -29,20 +30,10 @@ export async function GET(request: Request) {
     const unitId = searchParams.get('unitId');
     const isActive = searchParams.get('isActive');
 
-    // Build where clause based on user role
-    const whereClause: any = {};
+    // Get tenant filter using centralized helper (MULTI-TENANT SECURITY)
+    const whereClause: any = getTenantRecordFilter(session);
 
-    if (session.role === 'ADMIN') {
-      // Admin can only see tenants from their buildings
-      whereClause.building = {
-        adminId: session.userId,
-      };
-    } else if (session.role === 'TENANT') {
-      // Tenants can only see their own tenant records
-      whereClause.userId = session.userId;
-    }
-
-    // Apply filters
+    // Apply additional filters
     if (buildingId) {
       whereClause.buildingId = buildingId;
     }
@@ -152,47 +143,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validatedData = createTenantSchema.parse(body);
 
-    // Verify the building belongs to the admin
-    const building = await prisma.building.findFirst({
-      where: {
-        id: validatedData.buildingId,
-        adminId: session.userId,
-      },
-    });
-
-    if (!building) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            message: 'Edificio no encontrado',
-            code: 'NOT_FOUND',
-          },
-        },
-        { status: 404 }
-      );
-    }
-
-    // Verify the unit belongs to the building
-    const unit = await prisma.unit.findFirst({
-      where: {
-        id: validatedData.unitId,
-        buildingId: validatedData.buildingId,
-      },
-    });
-
-    if (!unit) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            message: 'Unidad no encontrada en este edificio',
-            code: 'NOT_FOUND',
-          },
-        },
-        { status: 404 }
-      );
-    }
+    // Verify the building and unit belong to the admin (MULTI-TENANT SECURITY)
+    await verifyBuildingOwnership(prisma, validatedData.buildingId, session.userId);
+    await verifyUnitOwnership(prisma, validatedData.unitId, session.userId);
 
     // Verify the user exists
     const user = await prisma.user.findUnique({
